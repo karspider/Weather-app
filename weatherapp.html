@@ -1,0 +1,84 @@
+
+<!DOCTYPE html><html class=''>
+<head><script src='//assets.codepen.io/assets/editor/live/console_runner-d0a557e5cb67f9cd9bbb9673355c7e8e.js'></script><script src='//assets.codepen.io/assets/editor/live/events_runner-21174b4c7273cfddc124acb0876792e0.js'></script><script src='//assets.codepen.io/assets/editor/live/css_live_reload_init-7618a0de08795409d8f6c9ef6805f7b2.js'></script><meta charset='UTF-8'><meta name="robots" content="noindex"><link rel="canonical" href="http://codepen.io/karspider/pen/RGpGBW" />
+
+
+<style class="cp-pen-styles">body{
+  font-family:sans-serif;
+  background-color:#151515;
+  color:white;
+  font-size:2rem;
+  text-align:center;
+  
+}
+#conv{
+  display:inline;
+  border: 2px solid white;
+  border-radius: 20px;
+  padding:7px;
+}
+#icon{
+  width:250px;
+}
+#conv:hover{
+  background-color:white;
+  color:black;
+}
+a{
+  text-decoration:none;
+  color:white;
+}
+</style></head><body>
+<h1>Karthik's Weather App</h1>
+<p id="city"></p>
+<p id="temp"></p>
+<a href="#"><div id="conv">Convert to Fahrenheit</div></a>
+<p id="desc"></p>
+<img id="icon" src="#"/>
+
+<script src='//assets.codepen.io/assets/common/stopExecutionOnTimeout-53beeb1a007ec32040abaf4c9385ebfc.js'></script><script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js'></script><script src='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js'></script>
+<script>$(document).ready(function () {
+    var celsius = true;
+    function KtoC(tempK) {
+        return tempK - 273.15;
+    }
+    function KtoF(tempK) {
+        return tempK * 1.8 - 459.67;
+    }
+    function capitalise(str) {
+        var arr = str.toLowerCase().split(' ');
+        var arr2 = arr.map(function (val) {
+            return val.replace(val.charAt(0), val.charAt(0).toUpperCase());
+        });
+        return arr2.join(' ');
+    }
+    $.getJSON('http://ip-api.com/json', function (json1) {
+        var city = json1['city'];
+        var countryCode = json1['countryCode'];
+        $('#city').html(city + ', ' + countryCode);
+        $.getJSON('http://api.openweathermap.org/data/2.5/weather?q=' + city + ',' + countryCode + '&APPID=e7e4e01e2a7c57e69882ac7cc67ea58a', function (json2) {
+            tempK = json2.main.temp;
+            tempC = Math.round(KtoC(tempK) * 10) / 10;
+            tempF = Math.round(KtoF(tempK) * 10) / 10;
+            var desc = capitalise(json2.weather[0].description);
+            var icon = json2.weather[0].icon;
+            var iconURL = 'http://openweathermap.org/img/w/' + icon + '.png';
+            $('#temp').html(tempC + '\xB0C');
+            $('#desc').html(desc);
+            $('#icon').attr('src', iconURL);
+        });
+    });
+    $('#conv').on('click', function () {
+        if (celsius) {
+            $('#temp').html(tempF + '\xB0F');
+            $('#conv').html('Convert to Celsius');
+        } else {
+            $('#temp').html(tempC + '\xB0C');
+            $('#conv').html('Convert to Fahrenheit');
+        }
+        celsius = !celsius;
+    });
+});
+//# sourceURL=pen.js
+</script>
+</body></html>
